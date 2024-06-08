@@ -1,5 +1,6 @@
 const config = require('./config')
     , axios = require('axios')
+    , he = require('he')
 const { sendErrorForwardNoFile, checkForContentTypeBeforeSending } = require('./helpers')
 const sendErrorForward = sendErrorForwardNoFile('npc controller')
 
@@ -10,7 +11,7 @@ npcController = {
         let { gender, ancestry, nation } = req.query
         gender = gender ? gender : getRandomElement(['male', 'female']);
         ancestry = ancestry ? ancestry : getRandomElement(['human', 'elf', 'orc']);
-        nation = nation ? nation : getRandomElement(['drangsdt', 'knach', 'lussk', 'pfaets', 'rhone', 'vipling', 'zwek']);
+        nation = nation ? nation : ancestry === 'human'?  getRandomElement(['drangsdt', 'knach', 'lussk', 'pfaets', 'rhone', 'vipling', 'zwek']) : null;
 
         let characteristics = setUpCharacteristicArray()
         characteristics = populateCharacteristicArray(characteristics, characteristicsCache[ancestry], ancestry, nation)
@@ -20,6 +21,11 @@ npcController = {
         } else {
             axios.get(config.behindTheNameEndpoints[ancestry][gender]).then(results => {
                 let name = results.data.split('random-results')[1].split('class="plain">')[1].split('</a>')[0]
+                name = he.decode(name).normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                if (ancestry === 'human') {
+                    name = vowelRepace(name, nation)
+                }
+
                 checkForContentTypeBeforeSending(res, { name, gender, ancestry, characteristics, nation })
             }).catch(e => sendErrorForward('behind the name', "Couldn't find a name", res))
         }
@@ -39,6 +45,90 @@ function getElfName() {
     const brokenName = baseName.match(syllableRegex)
     const lowerCaseName = brokenName[Math.floor(Math.random() * brokenName.length)]
     return lowerCaseName.charAt(0).toUpperCase() + lowerCaseName.slice(1);
+}
+
+function isVowel(x) {
+    return (x === "a" || x === "e" || x === "i" || x === "o" || x === "u");
+}
+
+function capitalizeFirstLetter(word) {
+    const firstLetter = word.charAt(0)
+    const firstLetterCap = firstLetter.toUpperCase()
+    const remainingLetters = word.slice(1).toLowerCase()
+    return firstLetterCap + remainingLetters
+}
+
+const vowelRepace = (name, nation) => {
+    name = name.toLowerCase()
+    const wordArray = name.split('')
+
+    const nationVowelDictionary = {
+        pfaets: {
+            'a': 'a',
+            'e': 'i',
+            'i': 'e',
+            'o': 'u',
+            'u': 'y',
+            'y': 'o'
+        },
+        vipling: {
+            'a': 'e',
+            'e': 'i',
+            'i': 'y',
+            'o': 'a',
+            'u': 'a',
+            'y': 'u'
+        },
+        rhone: {
+            'a': 'e',
+            'e': 'i',
+            'i': 'y',
+            'o': 'a',
+            'u': 'u',
+            'y': 'o'
+        },
+        zwek: {
+            'a': 'e',
+            'e': 'i',
+            'i': 'i',
+            'o': 'u',
+            'u': 'o',
+            'y': 'a'
+        },
+        knach: {
+            'a': 'a',
+            'e': 'i',
+            'i': 'o',
+            'o': 'u',
+            'u': 'y',
+            'y': 'e'
+        },
+        drangsdt: {
+            'a': 'y',
+            'e': 'a',
+            'i': 'e',
+            'o': 'i',
+            'u': 'o',
+            'y': 'u'
+        },
+        lussk: {
+            'a': 'e',
+            'e': 'o',
+            'i': 'u',
+            'o': 'y',
+            'u': 'i',
+            'y': 'a'
+        }
+    }
+    let finalWord = wordArray.map(letter => {
+        if (isVowel(letter)) {
+            return nationVowelDictionary[nation][letter]
+        } else {
+            return letter
+        }
+    }).join('')
+
+    return capitalizeFirstLetter(finalWord)
 }
 
 function setUpCharacteristicArray() {
@@ -108,7 +198,7 @@ function populateCharacteristicArray(characteristicsArray, ancestryInfo, ancestr
     return characteristicsArray
 }
 
-function setStrength (characteristicsArray, ancestryInfo, ancestry, nation) {
+function setStrength(characteristicsArray, ancestryInfo, ancestry, nation) {
     if (ancestry === 'human') {
         const humanStrengthDictionary = {
             drangsdt: 'A Follower',
@@ -137,8 +227,8 @@ function setHumanCharacteristics(characteristicsArray, nation) {
         vipling: 'People you\'ve fought alongside',
         zwek: 'Your neighbors'
     }
-    
-    characteristicsArray.devotions.push({value: humanDevotionsDictionary[nation], isBold: true})
+
+    characteristicsArray.devotions.push({ value: humanDevotionsDictionary[nation], isBold: true })
 
     const humanCharacteristicsDictionary = {
         drangsdt: {
@@ -186,13 +276,13 @@ function setHumanCharacteristics(characteristicsArray, nation) {
     const firstIndex = findNullIndex(characteristicsArray, firstToPutIn)
     const secondIndex = findNullIndex(characteristicsArray, secondToPutIn)
 
-    characteristicsArray[firstToPutIn][firstIndex] = {value: firstCharacteristic, isBold: firstToTakeFrom !== firstToPutIn }
-    characteristicsArray[secondToPutIn][secondIndex] = {value: secondCharacteristic, isBold: secondToTakeFrom === secondToPutIn }
+    characteristicsArray[firstToPutIn][firstIndex] = { value: firstCharacteristic, isBold: firstToTakeFrom !== firstToPutIn }
+    characteristicsArray[secondToPutIn][secondIndex] = { value: secondCharacteristic, isBold: secondToTakeFrom === secondToPutIn }
 
     return characteristicsArray
 }
 
-function findNullIndex (characteristicsArray, destination) {
+function findNullIndex(characteristicsArray, destination) {
     let indexArray = []
     for (i = 0; i < characteristicsArray[destination].length; i++) {
         if (!characteristicsArray[destination][i]) {
