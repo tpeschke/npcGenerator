@@ -3,10 +3,13 @@ import './App.css';
 import local from './local'
 import axios from 'axios'
 import Characteristics from './Characteristics';
+import processForWorldAnvil from './processForWorldAnvil';
+import processForGoblinsNotebook from './processForGoblinsNotebook';
 
 function App() {
   const [queryObject, setQueryObject] = useState({ gender: null, ancestry: null, nation: null });
   const [npc, setNPC] = useState({ name: null });
+  const [isCopied, setCopied] = useState(false);
 
   function setQueryValue(value, key) {
     value = value === "I Don't Care" ? null : value
@@ -24,12 +27,49 @@ function App() {
     }
 
     axios.get(local.endpoint + `/createNPC${queryString}`).then(npc => {
-      console.log(npc.data)
+      setCopied(false)
       setNPC(npc.data)
     })
   }
 
+  function processForDownload(format) {
+    for (const [key, value] of Object.entries(npc)) {
+      if (key === 'characteristics') {
+        for (const [charKey, charValue] of Object.entries(npc[key])) {
+          if (charKey !== 'strength') {
+            npc[key][charKey] = charValue.map(element => {
+              if (element) {
+                return element.isBold ? { value: element.value.toUpperCase() } : { value: capitalizeFirstLetter(element.value) }
+              } else {
+                return null
+              }
+            })
+          } else {
+            npc[key][charKey] = capitalizeFirstLetter(charValue)
+          }
+        }
+      } else if (key === 'ancestry' && value === 'temple') {
+        npc[key] = 'Human'
+      } else {
+        npc[key] = capitalizeFirstLetter(value)
+      }
+    }
+
+    let stringToDownload = ''
+    if (format === 'WA') {
+      stringToDownload = processForWorldAnvil(npc)
+    } else {
+      stringToDownload = processForGoblinsNotebook(npc)
+    }
+
+    if (stringToDownload !== '') {
+      navigator.clipboard.writeText(stringToDownload);
+      setCopied(true)
+    }
+  }
+
   function capitalizeFirstLetter(word) {
+    if (!word) {return word}
     const firstLetter = word.charAt(0)
     const firstLetterCap = firstLetter.toUpperCase()
     const remainingLetters = word.slice(1).toLowerCase()
@@ -55,6 +95,7 @@ function App() {
             <option value="human">Human</option>
             <option value="elf">Elf</option>
             <option value="orc">Orc</option>
+            <option value="temple">Temple</option>
           </select>
 
           {queryObject.ancestry === 'human' ? <div>
@@ -73,28 +114,30 @@ function App() {
         </div>
 
         <div>
-          <div>
-            BUTTONS TO DOWNLOAD WORLD ANVIL & GOBLIN'S NOTEBOOK VERSION
-          </div>
+          {npc.name ? <div className='button-shell'>
+            <button onClick={_ => processForDownload('WA')}>World Anvil</button>
+            <button onClick={_ => processForDownload('GN')}>Goblin's Notebook</button>
+            {isCopied ? <p>It was copied</p> : <p></p>}
+          </div> : <div></div>}
           {npc.name ? <div>
             <h2>{npc.name}</h2>
             <div className='basic-info-shell'>
-              <p><strong>Ancestry</strong> {capitalizeFirstLetter(npc.ancestry)} {npc.ancestry === 'human' ? `(${capitalizeFirstLetter(npc.nation)})` : ''}</p>
+              <p><strong>Ancestry</strong> {npc.ancestry === 'temple' ? 'Human' : capitalizeFirstLetter(npc.ancestry)} {npc.ancestry === 'human' ? `(${capitalizeFirstLetter(npc.nation)})` : ''}</p>
               <p><strong>Gender</strong> {capitalizeFirstLetter(npc.gender)}</p>
               <p><strong>Strength</strong> {capitalizeFirstLetter(npc.characteristics.strength)}</p>
             </div>
             <div className='characteristics-shell'>
               <div className='characteristics'>
                 <strong>Descriptions</strong>
-                <Characteristics array={npc.characteristics} objectKey='descriptions'/>
+                <Characteristics array={npc.characteristics} objectKey='descriptions' />
                 <strong>Flaws</strong>
-                <Characteristics array={npc.characteristics} objectKey='flaws'/>
+                <Characteristics array={npc.characteristics} objectKey='flaws' />
               </div>
               <div className='characteristics'>
                 <strong>Convictions</strong>
-                <Characteristics array={npc.characteristics} objectKey='convictions'/>
+                <Characteristics array={npc.characteristics} objectKey='convictions' />
                 <strong>Devotions</strong>
-                <Characteristics array={npc.characteristics} objectKey='devotions'/>
+                <Characteristics array={npc.characteristics} objectKey='devotions' />
               </div>
             </div>
           </div> : <div></div>

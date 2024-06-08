@@ -48,3 +48,13 @@ p {
 .characteristics p strong {
   color: red
 }
+
+.button-shell button:first-child {
+  margin-right: 15px;
+}
+
+.button-shell p {
+  font-weight: bold;
+  color: green;
+  margin-top: 5px;
+}

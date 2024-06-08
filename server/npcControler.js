@@ -14,7 +14,7 @@ npcController = {
         nation = nation ? nation : ancestry === 'human'?  getRandomElement(['drangsdt', 'knach', 'lussk', 'pfaets', 'rhone', 'vipling', 'zwek']) : null;
 
         let characteristics = setUpCharacteristicArray()
-        characteristics = populateCharacteristicArray(characteristics, characteristicsCache[ancestry], ancestry, nation)
+        characteristics = populateCharacteristicArray(characteristics, ancestry === 'temple' ? characteristicsCache.human : characteristicsCache[ancestry], ancestry, nation)
 
         if (ancestry === 'elf') {
             checkForContentTypeBeforeSending(res, { name: getElfName(), gender, ancestry, characteristics, nation })
@@ -176,7 +176,7 @@ function setUpCharacteristicArray() {
 
 function populateCharacteristicArray(characteristicsArray, ancestryInfo, ancestry, nation) {
     characteristicsArray = setStrength(characteristicsArray, ancestryInfo, ancestry, nation)
-    characteristicsArray.flaws[0] = ancestryInfo.temperament
+    characteristicsArray.flaws[0] = {value: ancestryInfo.temperament}
 
     const characteristicTypes = ['descriptions', 'convictions', 'devotions']
 
