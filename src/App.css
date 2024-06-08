@@ -30,6 +30,7 @@ p {
 
 .characteristics-shell {
   display: flex;
+  justify-content: space-between;
 }
 
 .characteristics-shell .characteristics:first-child {
