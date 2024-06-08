@@ -14,21 +14,24 @@ npcController = {
         nation = nation ? nation : ancestry === 'human'?  getRandomElement(['drangsdt', 'knach', 'lussk', 'pfaets', 'rhone', 'vipling', 'zwek']) : null;
 
         let characteristics = setUpCharacteristicArray()
-        characteristics = populateCharacteristicArray(characteristics, ancestry === 'temple' ? characteristicsCache.human : characteristicsCache[ancestry], ancestry, nation)
 
-        if (ancestry === 'elf') {
-            checkForContentTypeBeforeSending(res, { name: getElfName(), gender, ancestry, characteristics, nation })
-        } else {
-            axios.get(config.behindTheNameEndpoints[ancestry][gender]).then(results => {
-                let name = results.data.split('random-results')[1].split('class="plain">')[1].split('</a>')[0]
-                name = he.decode(name).normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                if (ancestry === 'human') {
-                    name = vowelRepace(name, nation)
-                }
-
-                checkForContentTypeBeforeSending(res, { name, gender, ancestry, characteristics, nation })
-            }).catch(e => sendErrorForward('behind the name', "Couldn't find a name", res))
-        }
+        axios.get(config.writingExercisesEndpoint).then(weResults => {
+            characteristics = populateCharacteristicArray(characteristics, ancestry === 'temple' ? characteristicsCache.human : characteristicsCache[ancestry], ancestry, nation, weResults.data.split(/[\s|\s,|.]+/)[0])
+    
+            if (ancestry === 'elf') {
+                checkForContentTypeBeforeSending(res, { name: getElfName(), gender, ancestry, characteristics, nation })
+            } else {
+                axios.get(config.behindTheNameEndpoints[ancestry][gender]).then(results => {
+                    let name = results.data.split('random-results')[1].split('class="plain">')[1].split('</a>')[0]
+                    name = he.decode(name).normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                    if (ancestry === 'human') {
+                        name = vowelRepace(name, nation)
+                    }
+    
+                    checkForContentTypeBeforeSending(res, { name, gender, ancestry, characteristics, nation })
+                }).catch(e => sendErrorForward('behind the name', "Couldn't find a name", res))
+            }
+        })
     },
     setCharacteristics: function (characteristics) {
         characteristicsCache = characteristics
@@ -174,19 +177,21 @@ function setUpCharacteristicArray() {
     return characteristicsArray
 }
 
-function populateCharacteristicArray(characteristicsArray, ancestryInfo, ancestry, nation) {
+function populateCharacteristicArray(characteristicsArray, ancestryInfo, ancestry, nation, randomDescription) {
     characteristicsArray = setStrength(characteristicsArray, ancestryInfo, ancestry, nation)
     characteristicsArray.flaws[0] = {value: ancestryInfo.temperament}
+
+    characteristicsArray.descriptions[findNullIndex(characteristicsArray, 'descriptions')] = {value: capitalizeFirstLetter( randomDescription)}
 
     const characteristicTypes = ['descriptions', 'convictions', 'devotions']
 
     const firstType = getRandomElement(characteristicTypes)
-    const secondType = getRandomElement(characteristicTypes)
-
     const firstCharacteristic = getRandomElement(ancestryInfo[firstType])
+    const firstIndex = findNullIndex(characteristicsArray, firstType)
+    
+    const secondType = getRandomElement(characteristicTypes)
     const secondCharacteristic = getRandomElement(ancestryInfo[secondType])
-    const firstIndex = Math.floor(Math.random() * characteristicsArray[firstType].length)
-    const secondIndex = Math.floor(Math.random() * characteristicsArray[secondType].length)
+    const secondIndex = findNullIndex(characteristicsArray, secondType)
 
     characteristicsArray[firstType][firstIndex] = { value: firstCharacteristic }
     characteristicsArray[secondType][secondIndex] = { value: secondCharacteristic }
@@ -265,18 +270,15 @@ function setHumanCharacteristics(characteristicsArray, nation) {
     const characteristicTypes = ['descriptions', 'convictions', 'devotions']
 
     const firstToTakeFrom = getRandomElement(limitedCharacteristicTypes)
-    const secondToTakeFrom = getRandomElement(limitedCharacteristicTypes)
-
     const firstCharacteristic = getRandomElement(humanCharacteristicsDictionary[nation][firstToTakeFrom])
-    const secondCharacteristic = getRandomElement(humanCharacteristicsDictionary[nation][secondToTakeFrom])
-
     const firstToPutIn = getRandomElement(characteristicTypes)
-    const secondToPutIn = getRandomElement(characteristicTypes)
-
     const firstIndex = findNullIndex(characteristicsArray, firstToPutIn)
-    const secondIndex = findNullIndex(characteristicsArray, secondToPutIn)
-
     characteristicsArray[firstToPutIn][firstIndex] = { value: firstCharacteristic, isBold: firstToTakeFrom !== firstToPutIn }
+    
+    const secondToTakeFrom = getRandomElement(limitedCharacteristicTypes)
+    const secondCharacteristic = getRandomElement(humanCharacteristicsDictionary[nation][secondToTakeFrom])
+    const secondToPutIn = getRandomElement(characteristicTypes)
+    const secondIndex = findNullIndex(characteristicsArray, secondToPutIn)
     characteristicsArray[secondToPutIn][secondIndex] = { value: secondCharacteristic, isBold: secondToTakeFrom === secondToPutIn }
 
     return characteristicsArray
