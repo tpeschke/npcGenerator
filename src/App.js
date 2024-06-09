@@ -124,7 +124,7 @@ function App() {
           <div className='button-shell'>
             <button onClick={_ => processForDownload('WA')}>World Anvil</button>
             <button onClick={_ => processForDownload('GN')}>Goblin's Notebook</button>
-            {isCopied ? <p>It was copied</p> : <p></p>}
+            {isCopied ? <p>NPC Copied</p> : <p></p>}
           </div>
           <div>
             <h2>{npc.name}</h2>
