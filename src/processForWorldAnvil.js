@@ -34,7 +34,7 @@ ${processIntoString(npc.characteristics.devotions)}
   [/col3]
   [col3]
   [h2]Flaws[/h2]
-  ${processIntoString(npc.characteristics.flaws)}
+${processIntoString(npc.characteristics.flaws)}
   [h2]Burdens[/h2]
 - 
   [/col3]
