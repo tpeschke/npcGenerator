@@ -181,6 +181,7 @@ function populateCharacteristicArray(characteristicsArray, ancestryInfo, ancestr
     characteristicsArray = setStrength(characteristicsArray, ancestryInfo, ancestry, nation)
     characteristicsArray.flaws[0] = {value: ancestryInfo.temperament}
 
+    if (Math.random() < 0.5) {randomDescription += ` - ${randomDescription.split("").reverse().join("")}`}
     characteristicsArray.descriptions[findNullIndex(characteristicsArray, 'descriptions')] = {value: capitalizeFirstLetter( randomDescription)}
 
     const characteristicTypes = ['descriptions', 'convictions', 'devotions']
