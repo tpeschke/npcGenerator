@@ -16,10 +16,20 @@ npcController = {
         let characteristics = setUpCharacteristicArray()
 
         axios.get(config.writingExercisesEndpoint).then(weResults => {
-            characteristics = populateCharacteristicArray(characteristics, ancestry === 'temple' ? characteristicsCache.human : characteristicsCache[ancestry], ancestry, nation, weResults.data.split(/[\s|\s,|.]+/)[0])
+            characteristics = populateCharacteristicArray(characteristics, ancestry === 'temple' || ancestry === 'clan' ? characteristicsCache.human : characteristicsCache[ancestry], ancestry, nation, weResults.data.split(/[\s|\s,|.]+/)[0])
     
             if (ancestry === 'elf') {
                 checkForContentTypeBeforeSending(res, { name: getElfName(), gender, ancestry, characteristics, nation })
+            } else if (ancestry === 'clan') {
+                axios.get(config.behindTheNameEndpoints.clan.notStated).then(results => {
+                    let name = results.data.split('random-results')[1].split('class="plain">')[1].split('</a>')[0]
+                    name = he.decode(name).normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                    if (ancestry === 'human') {
+                        name = vowelRepace(name, nation)
+                    }
+    
+                    checkForContentTypeBeforeSending(res, { name, gender, ancestry, characteristics, nation })
+                }).catch(e => sendErrorForward('behind the name', "Couldn't find a name", res))
             } else {
                 axios.get(config.behindTheNameEndpoints[ancestry][gender]).then(results => {
                     let name = results.data.split('random-results')[1].split('class="plain">')[1].split('</a>')[0]

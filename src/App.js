@@ -103,9 +103,10 @@ function App() {
             <option value="elf">Elf</option>
             <option value="orc">Orc</option>
             <option value="temple">Temple</option>
+            <option value="clan">Clan</option>
           </select>
 
-          {queryObject.ancestry === 'human' ? <div>
+          {queryObject.ancestry === 'human' || queryObject.ancestry === 'clan' ? <div>
             <p>Nation:</p>
             <select onChange={e => setQueryValue(e.target.value, 'nation')}>
               <option>I Don't Care</option>
