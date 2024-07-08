@@ -14,8 +14,8 @@ export default function processForWorldAnvil(npc) {
   [/col]
 [/row]
 [b]Caution[/b]: ?
+[br][section:confrontationBonusSection]+/-X[/section]
 [row]
-[section:confrontationBonusSection]+/-X[/section]
   [col3]
   [h2]Descriptions[/h2]
 ${processIntoString(npc.characteristics.descriptions)}
