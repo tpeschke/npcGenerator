@@ -13,8 +13,13 @@ export default function processForWorldAnvil(npc) {
   [b](Panic) Stress Threshold[/b]: ( ? ) ?
   [/col]
 [/row]
-[b]Caution[/b]: ?
-[br][section:confrontationBonusSection]+/-X[/section]
+[b]Caution[/b]: ?[br]
+[subcontainer:b6f707d5-068e-4c7e-bdbc-2225c8dc93d9]
+[section:confrontationBonusSection]@[+/-?](article:46d90ac6-a528-4430-bc0e-49ba76fcd575)[/section]
+[/subcontainer]
+[subcontainer:e90e5d79-7ab6-410d-b68f-9ec2a60ed99f]
+[section:confrontationBonusSection]@[+/-?%](article:46d90ac6-a528-4430-bc0e-49ba76fcd575)[/section]
+[/subcontainer]
 [row]
   [col3]
   [h2]Descriptions[/h2]
@@ -39,6 +44,16 @@ ${processIntoString(npc.characteristics.flaws)}
 - 
   [/col3]
 [/row]
+[subcontainer:b6f707d5-068e-4c7e-bdbc-2225c8dc93d9]
+[h2]Bonfire West March Standings[/h2]
+@[Standing Rules](article:3a61c5b9-9f99-43f2-a836-60f7f56ee609)
+- 
+[/subcontainer]
+[subcontainer:e90e5d79-7ab6-410d-b68f-9ec2a60ed99f]
+[h2]HackMaster West March Standings[/h2]
+@[Standing Rules](article:3a61c5b9-9f99-43f2-a836-60f7f56ee609)
+- 
+[/subcontainer]
 
 [row]
   [col]
