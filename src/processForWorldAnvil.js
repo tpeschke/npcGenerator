@@ -34,7 +34,7 @@ ${processIntoString(npc.characteristics.descriptions)}
 - 
   [h2]Convictions[/h2]
 ${processIntoString(npc.characteristics.convictions)}
-[h2]Devotions[/h2]
+[h2]Relationships[/h2]
 ${processIntoString(npc.characteristics.devotions)}
   [/col3]
   [col3]

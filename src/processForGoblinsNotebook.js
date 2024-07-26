@@ -4,11 +4,19 @@ export default function processForGoblinsNotebook(npc) {
         return array.map((element, index) => element ? '* ' + element.value + `${index === array.length - 1 ? '  ' : ' \n'}` : `* ${index === array.length - 1 ? ' ' : ' \n'}`).join('')
     }
 
+    function capitalizeFirstLetter(word) {
+        if (!word) { return word }
+        const firstLetter = word.charAt(0)
+        const firstLetterCap = firstLetter.toUpperCase()
+        const remainingLetters = word.slice(1).toLowerCase()
+        return firstLetterCap + remainingLetters
+      }
+
     return `# $[objectname]
-+/-3
-+/-6
-+/-9
-+/-12
++/-3  
++/-6  
++/-9  
++/-12  
 ## Goals  
 *  
 
@@ -21,7 +29,7 @@ ${processIntoString(npc.characteristics.convictions)}
 ## Flaws
 ${processIntoString(npc.characteristics.flaws)}
 
-## Devotions
+## Relationships
 ${processIntoString(npc.characteristics.devotions)}
 
 ## Reputation
@@ -31,11 +39,8 @@ ${processIntoString(npc.characteristics.devotions)}
 *   
 
 ## Misc
-**Gender**  
-**Race**  
-**Vitality**    
-**Stress Threshold** 30  
-**Panic**  
+**Gender** ${capitalizeFirstLetter(npc.gender)}   
+**Race** ${npc.ancestry === 'temple' ? 'Human' : capitalizeFirstLetter(npc.ancestry)} ${npc.ancestry === 'human' ? `(${capitalizeFirstLetter(npc.nation)})` : ''}  
 
 ## Background
 *  `

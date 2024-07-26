@@ -144,7 +144,7 @@ function App() {
               <div className='characteristics'>
                 <strong>Convictions</strong>
                 <Characteristics array={npc.characteristics} objectKey='convictions' />
-                <strong>Devotions</strong>
+                <strong>Relationships</strong>
                 <Characteristics array={npc.characteristics} objectKey='devotions' />
               </div>
             </div>
