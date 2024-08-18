@@ -253,7 +253,7 @@ function setHumanCharacteristics(characteristicsArray, nation) {
         },
         knach: {
             descriptions: ['Passionate', 'willful', 'open-minded', 'adaptable', 'extreme', 'daring'],
-            convictions: ['No half messures', 'to fight is to win', 'wherever you go, you\'re in charge', 'strenght is found in embracing the strange', 'a stranger is a friend not yet known']
+            convictions: ['No half messures', 'to fight is to win', 'wherever you go, you\'re in charge', 'strength is found in embracing the strange', 'a stranger is a friend not yet known']
         },
         lussk: {
             descriptions: ['Stoic', 'earnest', 'intuitive', 'poetic', 'thoughtful', 'deliberate', 'dutiful', 'kind'],
