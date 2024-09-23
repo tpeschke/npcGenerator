@@ -83,6 +83,14 @@ function App() {
     return firstLetterCap + remainingLetters
   }
 
+  function setNation (ancestry, nation) {
+    let adjustedNation;
+    if (nation) {
+      adjustedNation = nation === 'lokckkorsik' ? 'Lokck-Korsik' : nation
+    }
+    return ancestry === 'human' || ancestry === 'orc' || ancestry === 'elf' ? `(${capitalizeFirstLetter(adjustedNation)})` : ''
+  }
+
   return (
     <div className="App">
       <header className="App-header">
@@ -119,6 +127,48 @@ function App() {
               <option value="zwek">Zwek</option>
             </select>
           </div> : <div></div>}
+
+          {queryObject.ancestry === 'orc' ? <div>
+            <p>Horde:</p>
+            <select onChange={e => setQueryValue(e.target.value, 'nation')}>
+              <option>I Don't Care</option>
+              <option value="szabolck">Szabolck</option>
+              <option value="bok">Bok</option>
+              <option value="gyisk">Gyisk</option>
+              <option value="lokckkorsik">Lokck-Korsik</option>
+              <option value="prermuk">Prermuk</option>
+              <option value="totsok">Totsok</option>
+              <option value="vorhut">Vorhut</option>
+              <option value="certek">Certek</option>
+              <option value="dunk">Dunk</option>
+              <option value="mersk">Mersk</option>
+              <option value="potk">Potk</option>
+              <option value="sok">Sok</option>
+              <option value="suldk">Suldk</option>
+              <option value="voltk'">Voltk</option>
+            </select>
+          </div> : <div></div>}
+
+          {queryObject.ancestry === 'elf' ? <div>
+            <p>Conference:</p>
+            <select onChange={e => setQueryValue(e.target.value, 'nation')}>
+              <option>I Don't Care</option>
+              <option value="ail">Ail</option>
+              <option value="geny">Geny</option>
+              <option value="hern">Hern</option>
+              <option value="inar">Inar</option>
+              <option value="navar">Navar</option>
+              <option value="orym">Orym</option>
+              <option value="phas">Phas</option>
+              <option value="rhan">Rhan</option>
+              <option value="rhoth">Rhoth</option>
+              <option value="ruil">Ruil</option>
+              <option value="tiar">Tiar</option>
+              <option value="ual">Ual</option>
+              <option value="qinn">Qinn</option>
+              <option value="sylv'">Sylv</option>
+            </select>
+          </div> : <div></div>}
         </div>
 
         {npc.name ? <div>
@@ -130,7 +180,7 @@ function App() {
           <div>
             <h2>{npc.name}</h2>
             <div className='basic-info-shell'>
-              <p><strong>Ancestry</strong> {npc.ancestry === 'temple' ? 'Human' : capitalizeFirstLetter(npc.ancestry)} {npc.ancestry === 'human' ? `(${capitalizeFirstLetter(npc.nation)})` : ''}</p>
+              <p><strong>Ancestry</strong> {npc.ancestry === 'temple' ? 'Human' : capitalizeFirstLetter(npc.ancestry)} {setNation(npc.ancestry, npc.nation)}</p>
               <p><strong>Gender</strong> {capitalizeFirstLetter(npc.gender)}</p>
               <p><strong>Strength</strong> {capitalizeFirstLetter(npc.characteristics.strength)}</p>
             </div>

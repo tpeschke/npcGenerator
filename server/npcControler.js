@@ -11,7 +11,7 @@ npcController = {
         let { gender, ancestry, nation } = req.query
         gender = gender ? gender : getRandomElement(['male', 'female']);
         ancestry = ancestry ? ancestry : getRandomElement(['human', 'elf', 'orc']);
-        nation = nation ? nation : ancestry === 'human' ? getRandomElement(['drangsdt', 'knach', 'lussk', 'pfaets', 'rhone', 'vipling', 'zwek']) : null;
+        nation = nation ? nation : findNation(ancestry);
 
         let characteristics = setUpCharacteristicArray()
 
@@ -187,6 +187,17 @@ function setUpCharacteristicArray() {
     return characteristicsArray
 }
 
+function findNation(ancestry) {
+    if (ancestry === 'human') {
+        return getRandomElement(['drangsdt', 'knach', 'lussk', 'pfaets', 'rhone', 'vipling', 'zwek'])
+    } else if (ancestry === 'orc') {
+        return getRandomElement(['szabolck', 'bok', 'gyisk', 'lokckkorsik', 'prermuk', 'totsok', 'vorhut', 'certek', 'dunk', 'mersk', 'potk', 'sok', 'suldk', 'voltk'])
+    } else if (ancestry === 'elf') {
+        return getRandomElement(['ail', 'geny', 'hern', 'inar', 'navar', 'orym', 'phas', 'rhan', 'rhoth', 'ruil', 'tiar', 'ual', 'qinn', 'sylv'])
+    }
+    return null
+}
+
 function populateCharacteristicArray(characteristicsArray, ancestryInfo, ancestry, nation, randomDescription) {
     // ancestry specific
     characteristicsArray = setStrength(characteristicsArray, ancestryInfo, ancestry, nation)
@@ -199,6 +210,10 @@ function populateCharacteristicArray(characteristicsArray, ancestryInfo, ancestr
     // culture specific
     if (ancestry === 'human') {
         characteristicsArray = setHumanCharacteristics(characteristicsArray, nation)
+    } else if (ancestry === 'orc') {
+        characteristicsArray = setOrcCharacteristics(characteristicsArray, nation)
+    } else if (ancestry === 'elf') {
+        characteristicsArray = setElfCharacteristics(characteristicsArray, nation)
     }
 
     // random characteristic
@@ -208,7 +223,7 @@ function populateCharacteristicArray(characteristicsArray, ancestryInfo, ancestr
     return characteristicsArray
 }
 
-function populateSpecificCharacteristic (specificArray, arrayOfPossibilities, canBeReversed, specificIndex, isBold = null) {
+function populateSpecificCharacteristic(specificArray, arrayOfPossibilities, canBeReversed, specificIndex, isBold = null) {
     let characteristic = capitalizeFirstLetter(getRandomElement(arrayOfPossibilities))
 
     if (canBeReversed) {
@@ -251,6 +266,26 @@ function setStrength(characteristicsArray, ancestryInfo, ancestry, nation) {
             zwek: 'An Engineer'
         }
         characteristicsArray.strength = humanStrengthDictionary[nation]
+    } else if (ancestry === 'orc') {
+        const orcStrengthDictionary = {
+            szabolck: 'A leader who brings people together', 
+            bok: 'A leader who owns land and wealth', 
+            gyisk: 'A leader who encourages people to keep going', 
+            lokckkorsik: 'A leader who binds people together', 
+            prermuk: 'A leader who people want to be in charge', 
+            totsok: 'A leader who fights and keeps others fighting', 
+            vorhut: 'One who has a way with words', 
+            certek: 'A leader who smarter than everyone else', 
+            dunk: 'A leader who provides for their followers', 
+            mersk: 'A leader who teaches others', 
+            potk: 'A leader who serves as an example', 
+            sok: 'A leader who keeps their oaths', 
+            suldk: 'A leader who can control others', 
+            voltk: 'A leader who provides for those below them'
+        }
+        characteristicsArray.strength = orcStrengthDictionary[nation]
+    } else if (ancestry === 'elf') {
+        characteristicsArray.strength = 'A mystic'
     } else {
         characteristicsArray.strength = ancestryInfo.strength
     }
@@ -300,6 +335,153 @@ function setHumanCharacteristics(characteristicsArray, nation) {
     characteristicsArray.descriptions = populateSpecificCharacteristic(characteristicsArray.descriptions, humanCharacteristicsDictionary[nation].descriptions, true, null)
     characteristicsArray.convictions = populateSpecificCharacteristic(characteristicsArray.convictions, humanCharacteristicsDictionary[nation].convictions, true, null)
     characteristicsArray.devotions = populateSpecificCharacteristic(characteristicsArray.devotions, humanCharacteristicsDictionary[nation].devotions, true, null)
+
+    return characteristicsArray
+}
+
+function setOrcCharacteristics(characteristicsArray, nation) {
+    const orcCharacteristicsDictionary = {
+        szabolck: {
+            descriptions: ['open-minded'],
+            convictions: ['Speak softly and carry a big stick'],
+            devotions: ['Keeps the peace']
+        },
+        bok: {
+            descriptions: ['Proud'],
+            convictions: ['Orcs are a breed apart'],
+            devotions: ['Loves prestige']
+        },
+        gyisk: {
+            descriptions: ['Zealous'],
+            convictions: ['Hear all, say nothing'],
+            devotions: ['Admires endurance']
+        },
+        lokckkorsik: {
+            descriptions: ['Hedonist'],
+            convictions: ['Do not sell your soul to things'],
+            devotions: ['Desires a world without humans and elves']
+        },
+        prermuk: {
+            descriptions: ['Inventive'],
+            convictions: ['An enemy who becomes a friend is better than a dead enemy'],
+            devotions: ['Wants to be on top']
+        },
+        totsok: {
+            descriptions: ['Disciplined'],
+            convictions: ['Make your point with words and actions'],
+            devotions: ['Careful about their duties']
+        },
+        vorhut: {
+            descriptions: ['Mystical'],
+            convictions: ['The snows bury the mountain but they cannot destroy it'],
+            devotions: ['Cultivates knowledge']
+        },
+        certek: {
+            descriptions: ['Stoic'],
+            convictions: ['Trust rarely but when you do trust, trust completely'],
+            devotions: ['Hates the Bok']
+        },
+        dunk: {
+            descriptions: ['Brutal'],
+            convictions: ['Things which seem difficult become easy if you use your brains'],
+            devotions: ['Dreams of the good life']
+        },
+        mersk: {
+            descriptions: ['Free'],
+            convictions: ['Fight fair and you will also find friends'],
+            devotions: ['Seeks to hone themselves']
+        },
+        potk: {
+            descriptions: ['Iconoclastic'],
+            convictions: ['The sun will soon set'],
+            devotions: ['Wants a home']
+        },
+        sok: {
+            descriptions: ['Circumspect'],
+            convictions: ['Making a friend is doubling your strength'],
+            devotions: ['Channels aggression into passion']
+        },
+        suldk: {
+            descriptions: ['Scrappy'],
+            convictions: ['By hook or by crook'],
+            devotions: ['Does what they must']
+        },
+        voltk: {
+            descriptions: ['Brave'],
+            convictions: ['Try and try again'],
+            devotions: ['Never breaks their oaths']
+        }
+    }
+
+    characteristicsArray.descriptions = populateSpecificCharacteristic(characteristicsArray.descriptions, orcCharacteristicsDictionary[nation].descriptions, true, null)
+    characteristicsArray.convictions = populateSpecificCharacteristic(characteristicsArray.convictions, orcCharacteristicsDictionary[nation].convictions, true, null)
+    characteristicsArray.devotions = populateSpecificCharacteristic(characteristicsArray.devotions, orcCharacteristicsDictionary[nation].devotions, true, null)
+
+    return characteristicsArray
+}
+
+function setElfCharacteristics(characteristicsArray, nation) {
+    const elfCharacteristicsDictionary = {
+        ail: {
+            convictions: ['Priorities are important'],
+            devotions: ['Afraid of orcs', 'doesn\'t care about humans']
+        },
+        geny: {
+            convictions: ['You can\'t long for a future that probably won\'t happen'],
+            devotions: ['Tired of elves\' behavior']
+        },
+        hern: {
+            convictions: ['Move on and grow'],
+            devotions: ['Cares about humans']
+        },
+        inar: {
+            convictions: ['The fight shows your mettle'],
+            devotions: ['Feels superior to others']
+        },
+        navar: {
+            convictions: ['First thing is first'],
+            devotions: ['Willing to die for their Conference']
+        },
+        orym: {
+            convictions: ['Orcs are the sword of elves\' vengence'],
+            devotions: ['Tired of elves\' bickering']
+        },
+        phas: {
+            convictions: ['There is always a long road ahead'],
+            devotions: ['Tolerates humans', 'jealous of orcs']
+        },
+        rhan: {
+            convictions: ['The quality of your enemies determines your quality'],
+            devotions: ['Holds disdain for humans']
+        },
+        rhoth: {
+            convictions: ['Fight quietly to keep fighting'],
+            devotions: ['Finds the weak spot']
+        },
+        ruil: {
+            convictions: ['The bee can bring down a man'],
+            devotions: ['Chooses their companions carefully']
+        },
+        tiar: {
+            convictions: ['You are your core, not outer signifiers'],
+            devotions: ['Admires orcs', 'looks down on humans']
+        },
+        ual: {
+            convictions: ['Only through perfection can one be free'],
+            devotions: ['Above petty squabbles']
+        },
+        qinn: {
+            convictions: ['Today is yours but tomorrow is mine'],
+            devotions: ['Seeks to weaken their enemies']
+        },
+        sylv: {
+            convictions: ['All things belong to the elves'],
+            devotions: ['Seeks out conflict']
+        }
+    }
+
+    characteristicsArray.convictions = populateSpecificCharacteristic(characteristicsArray.convictions, elfCharacteristicsDictionary[nation].convictions, true, null)
+    characteristicsArray.devotions = populateSpecificCharacteristic(characteristicsArray.devotions, elfCharacteristicsDictionary[nation].devotions, true, null)
 
     return characteristicsArray
 }
