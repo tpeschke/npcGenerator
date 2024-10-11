@@ -17,7 +17,10 @@ function App() {
 
   function setQueryValue(value, key) {
     value = value === "I Don't Care" ? null : value
-    const newQueryValue = { ...queryObject, [key]: value }
+    let newQueryValue = { ...queryObject, [key]: value }
+    if (key === 'ancestry' && value !== queryObject.ancestry) {
+      newQueryValue.nation = null
+    }
     setQueryObject(newQueryValue)
     getNPC(newQueryValue)
   }
@@ -145,7 +148,7 @@ function App() {
               <option value="potk">Potk</option>
               <option value="sok">Sok</option>
               <option value="suldk">Suldk</option>
-              <option value="voltk'">Voltk</option>
+              <option value="voltk">Voltk</option>
             </select>
           </div> : <div></div>}
 
@@ -166,7 +169,7 @@ function App() {
               <option value="tiar">Tiar</option>
               <option value="ual">Ual</option>
               <option value="qinn">Qinn</option>
-              <option value="sylv'">Sylv</option>
+              <option value="sylv">Sylv</option>
             </select>
           </div> : <div></div>}
         </div>
