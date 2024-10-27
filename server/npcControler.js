@@ -65,6 +65,7 @@ function isVowel(x) {
 }
 
 function capitalizeFirstLetter(word) {
+    if (!word) {return null}
     const firstLetter = word.charAt(0)
     const firstLetterCap = firstLetter.toUpperCase()
     const remainingLetters = word.slice(1).toLowerCase()
@@ -201,7 +202,7 @@ function findNation(ancestry) {
 function populateCharacteristicArray(characteristicsArray, ancestryInfo, ancestry, nation, randomDescription) {
     // ancestry specific
     characteristicsArray = setStrength(characteristicsArray, ancestryInfo, ancestry, nation)
-    characteristicsArray.flaws = populateSpecificCharacteristic(characteristicsArray.flaws, [ancestryInfo.temperament], false, 0)
+    characteristicsArray.flaws = populateSpecificCharacteristic(characteristicsArray.flaws, [ancestryInfo.flaw], false, 0)
 
     characteristicsArray.descriptions = populateSpecificCharacteristic(characteristicsArray.descriptions, ancestryInfo.descriptions, true, null)
     characteristicsArray.convictions = populateSpecificCharacteristic(characteristicsArray.convictions, ancestryInfo.convictions, true, null)
