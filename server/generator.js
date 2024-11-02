@@ -5,7 +5,7 @@ const express = require('express')
   , path = require('path')
   , session = require('express-session')
   , passport = require('passport')
-  , npcCtrl = require('./npcControler')
+  , npcCtrl = require('./npcController')
   , axios = require('axios')
 
 const app = new express()
