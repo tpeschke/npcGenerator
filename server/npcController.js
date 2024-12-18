@@ -494,4 +494,3 @@ function setElfCharacteristics(characteristicsArray, nation) {
 }
 
 module.exports = npcController
-
