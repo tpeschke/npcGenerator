@@ -309,7 +309,7 @@ function setHumanCharacteristics(characteristicsArray, nation) {
         },
         knach: {
             descriptions: ['willful', 'adaptable'],
-            convictions: ['No half messures'],
+            convictions: ['No half measures'],
             devotions: ['Immediate Family']
         },
         lussk: {
